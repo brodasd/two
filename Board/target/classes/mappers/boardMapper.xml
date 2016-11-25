@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zerock.persistence.BoardMapper">
+
+	<insert id="create" parameterType="BoardVO">
+		insert into
+		tbl_board(title,content, writer,imgsrc )
+		values(#{title}, #{content},
+		#{writer},#{imgsrc})
+	</insert>
+
+	<select id="read" resultType="BoardVO">
+
+		select * from tbl_board where
+		bno=#{bno}
+	</select>
+	
+	<select id ="countReply">
+	select rno,count(bno) from tbl_reply
+	 where rno=#{rno} group by bno
+	 </select>
+
+	<update id="update" parameterType="BoardVO">
+		update tbl_board set content =
+		#{content},title=#{title}
+		where bno = #{bno}
+	</update>
+
+	<delete id="delete">
+		delete from tbl_board where bno=#{bno}
+	</delete>
+
+
+	<select id="listAll" resultType="org.zerock.domain.BoardVO">
+		select
+		bno, title, content,
+		writer, regdate
+		from
+		tbl_board
+		where bno > 0
+		order by bno desc,
+		regdate
+		desc
+	</select>
+
+
+
+	<select id="listCriteria" resultType="BoardVO">
+		select
+		bno, title, content,
+		writer, regdate
+		from
+		tbl_board
+		where bno > 0
+		order by bno desc,
+		regdate
+		desc
+		limit
+		#{pageStart}, #{perPageNum}
+	</select>
+
+
+
+	<sql id="search">
+		<if test="sType != null">
+			<if test="sType == 't'.toString()">
+				and title like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="sType == 'c'.toString()">
+				and content like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="sType == 'w'.toString()">
+				and writer like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="sType == 'tc'.toString()">
+				and ( title like CONCAT('%', #{keyword}, '%') OR content
+				like
+				CONCAT('%', #{keyword}, '%'))
+			</if>
+			<if test="sType == 'cw'.toString()">
+				and ( content like CONCAT('%', #{keyword}, '%') OR writer
+				like
+				CONCAT('%', #{keyword}, '%'))
+			</if>
+			<if test="sType == 'tcw'.toString()">
+				and ( title like CONCAT('%', #{keyword}, '%')
+				OR
+				content
+				like CONCAT('%', #{keyword}, '%')
+				OR
+				writer like CONCAT('%',
+				#{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+	
+
+	<select id="listPage" resultType="BoardVO">
+		select
+		bno, title, content,
+		writer,
+		regdate
+		from
+		tbl_board
+		where bno > 0
+		order by bno desc, regdate
+		desc
+		limit #{page}, 10
+	</select>
+	
+	
+	<select id="listSearch" resultType="BoardVO">
+		select *
+		from tbl_board
+		where bno > 0
+		<include refid="search"></include>
+		order by bno desc
+		limit #{pageStart}, #{perPageNum}
+	</select>
+	
+	<select id="listSearchCount" resultType="int">
+		select 
+		count(bno)
+		from tbl_board
+		where 
+		bno > 0
+		<include refid="search"></include>
+
+	</select>
+	
+		<select id="countPaging" resultType="int">
+		select
+		count(bno)
+		from
+		tbl_board
+		where
+		bno > 0
+	</select>
+
+
+</mapper>

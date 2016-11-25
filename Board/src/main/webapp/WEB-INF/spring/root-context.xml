@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+		<property name="username" value="bit88"></property>
+		<property name="password" value="bit88"></property>
+		<property name="url"
+			value="jdbc:log4jdbc:mysql://192.168.0.9:3306/ironman?useSSL=false&amp;serverTimezone=Asia/Seoul"></property>
+	</bean>
+
+
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
+		<!-- 마이바티스는 매퍼파일이 중요 -->
+		<property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"></property>
+		<!-- 클래스패쓰는 src를 의미함. **는 하위경로가 어떤거라든지 의미가없음. -->
+		<!-- Mapper.xml아무거나해도 상관없다는뜻. -->
+	</bean>
+
+
+
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+		<!-- try catch finally를 없애주는애 얘가 자동으로 처리를해줌 -->
+
+		<!-- 메소드를 호출하면 자동적으로 설정해줌 데코레이트패턴이라고함. -->
+	</bean>
+ 
+
+	<context:component-scan base-package="org.zerock.persistence"></context:component-scan>
+	<context:component-scan base-package="org.zerock.service"></context:component-scan>
+
+
+</beans>
+
